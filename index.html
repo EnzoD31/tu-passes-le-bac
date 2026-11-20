@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Petit Bac</title>
+<style>
+  :root{
+    --bg:#0f1420; --card:#19202f; --card2:#222b3d; --line:#2e3a52;
+    --txt:#eef2f9; --muted:#9aa7bd; --accent:#ffbe3d; --accent2:#4ea1ff;
+    --ok:#39d37f; --bad:#ff5d6c; --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;}
+  body{min-height:100vh;}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px;}
+  h1{font-size:26px;margin:0;letter-spacing:.5px}
+  h1 .pt{color:var(--accent)}
+  .sub{color:var(--muted);font-size:14px;margin-top:4px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-top:16px;}
+  .card h2{margin:0 0 12px;font-size:17px}
+  label.fld{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px}
+  input[type=text],input[type=number]{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:12px 14px;font-size:16px;outline:none}
+  input:focus{border-color:var(--accent2)}
+  button{cursor:pointer;border:none;border-radius:11px;font-size:15px;font-weight:600;padding:12px 16px;transition:.12s;font-family:inherit}
+  button:active{transform:translateY(1px)}
+  button:disabled{opacity:.45;cursor:default}
+  .btn-primary{background:var(--accent);color:#1a1205;width:100%}
+  .btn-primary:hover{filter:brightness(1.05)}
+  .btn-sec{background:var(--card2);color:var(--txt);border:1px solid var(--line)}
+  .btn-ghost{background:transparent;color:var(--muted);padding:8px 10px}
+  .btn-stop{background:var(--bad);color:#fff;width:100%}
+  .btn-ok{background:var(--ok);color:#06301c;width:100%}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>*{flex:1}
+  .muted{color:var(--muted)}
+  .center{text-align:center}
+  .code{font-size:34px;font-weight:800;letter-spacing:8px;color:var(--accent);text-align:center;background:var(--card2);border-radius:12px;padding:14px;border:1px dashed var(--line)}
+  .cat-chip.on{border-color:var(--accent);background:#2a2516}
+  .ord-list{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+  .ord-row{display:flex;align-items:center;gap:8px;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+  .ord-num{width:22px;height:22px;flex:none;border-radius:50%;background:var(--accent);color:#1a1205;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .ord-nm{flex:1;font-size:14px}
+  .ord-btn{background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:6px 10px;font-size:14px;flex:none}
+  .ord-btn:disabled{opacity:.3}
+  .ord-btn.del{color:var(--bad)}
+  .addwrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .add-cat{font-size:13px;padding:8px 10px;flex:0 0 auto}
+  .plist{display:flex;flex-direction:column;gap:8px}
+  .pill{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--ok);flex:none}
+  .pill .nm{font-weight:600;flex:1}
+  .pill .sc{color:var(--accent);font-weight:700}
+  .badge{font-size:11px;background:#2a2516;color:var(--accent);border:1px solid var(--line);border-radius:20px;padding:2px 8px}
+  .letter{font-size:72px;font-weight:900;color:var(--accent);line-height:1;text-align:center;margin:4px 0}
+  .timerbar{height:10px;background:var(--card2);border-radius:8px;overflow:hidden;margin:10px 0}
+  .timerbar > i{display:block;height:100%;background:linear-gradient(90deg,var(--ok),var(--accent));transition:width .3s linear}
+  .timerbar.low > i{background:linear-gradient(90deg,var(--accent),var(--bad))}
+  .tnum{font-weight:700;font-size:15px}
+  .grid-ans{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+  .ans-row{display:flex;align-items:center;gap:10px}
+  .ans-row .lab{width:38%;font-size:14px;color:var(--muted)}
+  .ans-row input{flex:1}
+  table.review{width:100%;border-collapse:collapse;margin-top:6px;font-size:13px}
+  table.review th,table.review td{border:1px solid var(--line);padding:8px 6px;text-align:left}
+  table.review th{color:var(--muted);font-weight:600;background:var(--card2)}
+  .ans-cell.editable{cursor:pointer;outline:1px dashed var(--accent2);outline-offset:-2px}
+  .ans-cell .w{font-weight:600}
+  .ans-cell .p{float:right;font-size:12px}
+  .p2{color:var(--ok)} .p1{color:var(--accent)} .p0{color:var(--bad)}
+  .strike{text-decoration:line-through;opacity:.5}
+  .notice{background:#2a2516;border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--accent);font-size:14px;margin-top:12px}
+  .foot{margin-top:18px;text-align:center}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px}
+  .spacer{height:10px}
+  .toprow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .roundtag{font-size:13px;color:var(--muted)}
+  .sep{height:1px;background:var(--line);margin:14px 0}
+  code{background:var(--card2);padding:2px 6px;border-radius:6px;font-size:13px}
+  pre{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="toprow">
+    <div><h1>Petit <span class="pt">Bac</span></h1><div class="sub">Multijoueur en ligne</div></div>
+    <div id="hdr-right"></div>
+  </div>
+  <div id="app"><div class="card center muted">Chargement…</div></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, onValue, onDisconnect, remove, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+/* ============================================================
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAG-fTbMlOZktX7iQdeTPhvw7Ihqhau0yo",
+    authDomain: "petit-bac-4e92c.firebaseapp.com",
+    projectId: "petit-bac-4e92c",
+    storageBucket: "petit-bac-4e92c.firebasestorage.app",
+    messagingSenderId: "813650052777",
+    appId: "1:813650052777:web:574dcfefd3818d6debcbb8"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
+   ============================================================ */
+const FIREBASE_CONFIG = {
+  apiKey: "PASTE_API_KEY",
+  authDomain: "PASTE.firebaseapp.com",
+  databaseURL: "https://PASTE-default-rtdb.firebaseio.com",
+  projectId: "PASTE_PROJECT_ID",
+  appId: "PASTE_APP_ID"
+};
+/* ============================================================ */
+
+/* ---------- état global ---------- */
+let fdb=null;
+let myId=null, myName="", myRole=null, gameCode=null;
+let myPres={};            // mon nœud joueur (cid,name,role,ans,stop,marks,rv)
+let peers=[];             // tous les nœuds joueurs
+let game=null;            // état de la partie (nœud state)
+let playersList=[];
+let myAnswers={};
+let tickTimer=null, hostTimer=null;
+let builtRound=-1, lastPhase=null, myAnsRound=-1;
+let offState=null, offPlayers=null;
+
+const CATALOG = ["Prénom","Ville/Pays","Animal","Fruits ou Légumes","Métier","Célébrité",
+  "Ville","Pays","Objet","Couleur","Marque","Plat","Film","Sport","Capitale","Partie du corps"];
+const DEFAULT_CATS = ["Prénom","Ville/Pays","Animal","Fruits ou Légumes","Métier","Célébrité"];
+const HARD = ["K","Q","W","X","Y","Z"];
+const ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const app = () => $("#app");
+function esc(s){return (s==null?"":String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function norm(w){ return (w||"").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]/g,""); }
+function firstAlpha(w){ const m=(w||"").trim().normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().match(/[A-Z]/); return m?m[0]:""; }
+function randCode(){ let c=""; for(let i=0;i<4;i++) c+=ALPHA[Math.floor(Math.random()*26)]; return c; }
+function durLabel(d){ if(!d) return "Illimitée"; if(d<60) return d+"s"; return d%60===0?(d/60)+" min":d+"s"; }
+function stopLabel(n){ return n+(n===1?"ʳᵉ":"ᵉ")+" pers."; }
+function myCid(){ let id=localStorage.getItem("pb_id"); if(!id){ id="p"+Math.random().toString(36).slice(2,10); localStorage.setItem("pb_id",id);} return id; }
+const gref = sub => ref(fdb, "games/"+gameCode+(sub?("/"+sub):""));
+
+/* ---------- démarrage ---------- */
+function configOk(){ return FIREBASE_CONFIG.databaseURL && !/PASTE/.test(JSON.stringify(FIREBASE_CONFIG)); }
+function init(){
+  myId=myCid(); myName=localStorage.getItem("pb_name")||"";
+  if(!configOk()) return screenSetup();
+  try{ const appf=initializeApp(FIREBASE_CONFIG); fdb=getDatabase(appf); }
+  catch(e){ return screenSetup("Erreur d'initialisation Firebase : "+e.message); }
+  screenHome();
+}
+init();
+
+function screenSetup(err){
+  $("#hdr-right").innerHTML="";
+  app().innerHTML=`<div class="card"><h2>Configuration Firebase requise</h2>
+    ${err?`<div class="notice">${esc(err)}</div>`:''}
+    <p class="muted">Cette page a besoin de ta config Firebase pour fonctionner. Ouvre le fichier <code>index.html</code>, trouve le bloc <code>FIREBASE_CONFIG</code> en haut du script, et remplace les valeurs <code>PASTE_…</code> par celles de ton projet (Console Firebase → Paramètres du projet → tes applications Web → Configuration du SDK).</p>
+    <p class="muted">Pense aussi à activer <b>Realtime Database</b> et à la démarrer en <b>mode test</b>.</p></div>`;
+}
+
+/* ---------- accueil ---------- */
+function screenHome(){
+  $("#hdr-right").innerHTML="";
+  app().innerHTML=`
+  <div class="card">
+    <h2>Ton pseudo</h2>
+    <input id="nm" type="text" maxlength="18" placeholder="Ex : Enzo" value="${esc(myName)}">
+    <div class="spacer"></div>
+    <button class="btn-primary" id="go-create">Créer une partie</button>
+    <div class="sep"></div>
+    <label class="fld">Rejoindre avec un code</label>
+    <div class="row">
+      <input id="jc" type="text" maxlength="4" placeholder="Code" style="flex:2;text-transform:uppercase">
+      <button class="btn-sec" id="go-join" style="flex:1">Rejoindre</button>
+    </div>
+    <div class="hint">Partage le code : tout le monde entre le même pour jouer ensemble, chacun sur son écran.</div>
+  </div>`;
+  $("#nm").addEventListener("input",e=>{ myName=e.target.value; localStorage.setItem("pb_name",myName); });
+  $("#go-create").onclick=()=>{ if(reqName()) enterGame(randCode(),"host"); };
+  $("#go-join").onclick=()=>{ const v=$("#jc").value.trim().toUpperCase(); if(!v||v.length<4){alert("Entre un code valide.");return;} if(reqName()) enterGame(v,"player"); };
+}
+function reqName(){ myName=(myName||"").trim(); if(!myName){ alert("Choisis un pseudo."); const n=$("#nm"); if(n)n.focus(); return false;} localStorage.setItem("pb_name",myName); return true; }
+
+/* ---------- entrer dans la partie ---------- */
+async function enterGame(code, role){
+  gameCode=code; myRole=role;
+  myPres={ cid:myId, name:myName, role };
+  if(role==="player"){
+    let snap; try{ snap=await get(gref("state")); }catch(e){ alert("Erreur réseau."); screenHome(); return; }
+    if(!snap.exists()){ alert("Aucune partie avec ce code."); screenHome(); return; }
+  }
+  if(role==="host"){
+    game={ phase:"lobby", round:0, letter:"", startTime:0,
+      settings:{cats:DEFAULT_CATS.slice(),duration:120,excludeHard:true,stopAfter:1,target:50},
+      results:{}, winner:"", usedLetters:[], stoppedBy:"", hostId:myId };
+    writeState();
+  }
+  // écoute de l'état + des joueurs
+  offState = onValue(gref("state"), s=>{ game = s.val()||game||null; refresh(); });
+  offPlayers = onValue(gref("players"), s=>{ const v=s.val()||{}; peers=Object.keys(v).map(k=>v[k]); refresh(); });
+  // mon nœud joueur + nettoyage auto à la déconnexion
+  pushPresence();
+  try{ onDisconnect(gref("players/"+myId)).remove(); }catch(e){}
+  if(role==="host") startHostLoop();
+  refresh();
+}
+function pushPresence(){ if(gameCode) set(gref("players/"+myId), myPres).catch(()=>{}); }
+function writeState(){ if(gameCode && myRole==="host" && game) set(gref("state"), game).catch(()=>{}); }
+
+function refresh(){
+  if(!gameCode) return;
+  let list=peers.slice();
+  if(!list.some(p=>p&&p.cid===myId)) list.push(myPres);
+  peers=list.filter(p=>p&&p.cid);
+  playersList = peers.filter(p=>p.name).map(p=>({cid:p.cid,name:p.name,role:p.role}));
+  syncForPhase();
+  render();
+  manageTick();
+}
+
+/* réagir aux changements de phase (côté joueur) */
+function syncForPhase(){
+  if(!game) return;
+  if(game.phase==="playing" && game.round!==myAnsRound){
+    myAnsRound=game.round; myAnswers={};
+    myPres.ans={round:game.round,values:{}}; myPres.stop=0;
+    myPres.marks={round:game.round,map:{}}; myPres.rv=0; pushPresence();
+  }
+  if(game.phase==="review" && lastPhase!=="review"){
+    const map={};
+    (game.settings.cats||[]).forEach(cat=>{ const w=myAnswers[cat]||""; map[cat]= (w.trim()!=="" && firstAlpha(w)===firstAlpha(game.letter))?2:0; });
+    myPres.ans={round:game.round,values:Object.assign({},myAnswers)};
+    myPres.marks={round:game.round,map}; myPres.rv=0; pushPresence();
+  }
+  lastPhase=game.phase;
+}
+
+/* ---------- boucle hôte (autorité) ---------- */
+function startHostLoop(){
+  if(hostTimer) clearInterval(hostTimer);
+  hostTimer=setInterval(()=>{
+    if(myRole!=="host"||!game) return;
+    if(game.phase==="playing"){
+      const st=game.settings;
+      if(st.duration && remaining()<=0){ setState({phase:"review",stoppedBy:"⏱"}); return; }
+      const stoppers=peers.filter(p=>p.stop===game.round);
+      const need=Math.min(st.stopAfter||1, Math.max(1,playersList.length));
+      if(stoppers.length>=need){ const last=stoppers[stoppers.length-1]; setState({phase:"review",stoppedBy:last.name||""}); }
+    }
+    else if(game.phase==="review"){
+      const voters=playersList.length;
+      const ready=peers.filter(p=>p.name&&p.rv===game.round).length;
+      if(voters>0 && ready>=voters) finalizeRound();
+    }
+  },300);
+}
+function setState(patch){ if(myRole!=="host"||!game) return; Object.assign(game,patch); writeState(); render(); manageTick(); }
+const isHost = ()=> myRole==="host";
+
+/* ---------- minuteur ---------- */
+function manageTick(){
+  if(tickTimer){ clearInterval(tickTimer); tickTimer=null; }
+  if(game && game.phase==="playing"){ tickTimer=setInterval(updateTimer,250); updateTimer(); }
+}
+function remaining(){ if(!game) return 0; const d=game.settings.duration; if(!d) return Infinity; if(!game.startTime) return d; return Math.max(0,d-(Date.now()-game.startTime)/1000); }
+function updateTimer(){
+  const bar=$("#tbar"),num=$("#tnum"); if(!bar||!game) return;
+  const d=game.settings.duration,r=remaining();
+  if(!d){ bar.querySelector("i").style.width="100%"; bar.classList.remove("low"); if(num) num.textContent="∞ illimité"; return; }
+  const pct=Math.max(0,Math.min(100,(r/d)*100));
+  bar.querySelector("i").style.width=pct+"%"; bar.classList.toggle("low",r<=15);
+  if(num) num.textContent=Math.ceil(r)+"s";
+}
+
+/* ---------- rendu ---------- */
+function render(){
+  $("#hdr-right").innerHTML = gameCode?`<div class="badge">Partie ${esc(gameCode)}</div>`:"";
+  if(!gameCode) return;
+  if(!game){
+    app().innerHTML=`<div class="card center"><div class="code">${esc(gameCode)}</div>
+      <div class="notice">En attente de l'hôte de la partie…</div></div>
+      <div class="foot"><button class="btn-ghost" id="leave">Quitter</button></div>`;
+    $("#leave").onclick=leaveGame; return;
+  }
+  switch(game.phase){
+    case "lobby": return renderLobby();
+    case "playing": return renderPlaying();
+    case "review": return renderReview();
+    case "results": return renderResults();
+  }
+}
+
+function totals(){
+  const t={}; playersList.forEach(p=>t[p.cid]=0);
+  const res=(game&&game.results)||{};
+  Object.keys(res).forEach(r=>{ const m=res[r]||{}; Object.keys(m).forEach(cid=> t[cid]=(t[cid]||0)+(m[cid]||0)); });
+  return t;
+}
+function playerPills(showScore){
+  const sc=totals();
+  return `<div class="plist">`+playersList.slice().sort((a,b)=>(sc[b.cid]||0)-(sc[a.cid]||0)).map(p=>`
+    <div class="pill"><span class="dot"></span>
+      <span class="nm">${esc(p.name)}${p.cid===myId?' <span class="muted">(toi)</span>':''}${p.role==="host"?' <span class="badge">hôte</span>':''}</span>
+      ${showScore?`<span class="sc">${sc[p.cid]||0}</span>`:''}</div>`).join("")+`</div>`;
+}
+
+/* ---------- LOBBY ---------- */
+function renderLobby(){
+  const host=isHost(), st=game.settings;
+  const catBlock=`
+    <label class="fld">Catégories — ordre du jeu (${st.cats.length})</label>
+    <div class="ord-list">
+      ${st.cats.map((cat,i)=>`<div class="ord-row"><span class="ord-num">${i+1}</span><span class="ord-nm">${esc(cat)}</span>
+        ${host?`<button class="ord-btn" data-up="${i}" ${i===0?'disabled':''}>↑</button><button class="ord-btn" data-down="${i}" ${i===st.cats.length-1?'disabled':''}>↓</button><button class="ord-btn del" data-del="${i}">✕</button>`:''}</div>`).join("")||'<span class="hint">Aucune catégorie.</span>'}
+    </div>
+    ${host?`<label class="fld">Ajouter une catégorie</label><div class="addwrap">${CATALOG.filter(c=>!st.cats.includes(c)).map(c=>`<button class="btn-sec add-cat" data-add="${esc(c)}">+ ${esc(c)}</button>`).join("")||'<span class="hint">Toutes les catégories du catalogue sont ajoutées.</span>'}</div>
+      <div class="row" style="margin-top:8px">
+        <input id="custcat" type="text" maxlength="28" placeholder="Catégorie libre (ex : Pays d'Afrique, Film…)" style="flex:2">
+        <button class="btn-sec" id="addcust" style="flex:1">+ Ajouter</button>
+      </div>`:''}`;
+  app().innerHTML=`
+  <div class="card center"><div class="muted">Code de la partie — partage-le</div><div class="code">${esc(gameCode)}</div></div>
+  <div class="card"><h2>Joueurs (${playersList.length})</h2>${playerPills(false)}</div>
+  <div class="card">
+    <h2>Réglages ${host?'':'<span class="badge">lecture seule</span>'}</h2>
+    ${catBlock}
+    <label class="fld">Durée par manche</label>
+    <div class="row">
+      ${[60,90,120,180,240,0].map(d=>`<button class="btn-sec" data-dur="${d}" ${host?'':'disabled'}
+        style="${st.duration===d?'border-color:var(--accent);color:var(--accent)':''}">${durLabel(d)}</button>`).join("")}
+    </div>
+    <label class="fld">Fin de la manche : dès que…</label>
+    <div class="row">
+      ${[1,2,3].map(n=>`<button class="btn-sec" data-stop="${n}" ${host?'':'disabled'}
+        style="${(st.stopAfter||1)===n?'border-color:var(--accent);color:var(--accent)':''}">${stopLabel(n)}</button>`).join("")}
+    </div>
+    <div class="hint">La manche s'arrête quand ce nombre de joueurs ont cliqué « Stop » (ou à la fin du temps).</div>
+    <label class="fld">Objectif de points — le premier à l'atteindre gagne</label>
+    <div class="row">
+      ${[30,40,50].map(v=>`<button class="btn-sec" data-target="${v}" ${host?'':'disabled'}
+        style="${st.target===v?'border-color:var(--accent);color:var(--accent)':''}">${v}</button>`).join("")}
+      <input id="tgt" type="number" min="5" step="5" placeholder="Autre" value="${[30,40,50].includes(st.target)?'':(st.target||'')}" ${host?'':'disabled'} style="flex:1">
+    </div>
+    <label class="fld" style="display:flex;align-items:center;gap:10px;margin-top:14px">
+      <input type="checkbox" id="exh" ${st.excludeHard?'checked':''} ${host?'':'disabled'} style="width:18px;height:18px;accent-color:var(--accent)">
+      <span style="color:var(--txt)">Exclure les lettres difficiles (K, Q, W, X, Y, Z)</span>
+    </label>
+    ${host?`<div class="spacer"></div><button class="btn-primary" id="start" ${st.cats.length?'':'disabled'}>Lancer la 1ʳᵉ manche</button>
+      <div class="hint">Tu es l'hôte : tu lances les manches.</div>`
+      :`<div class="notice">En attente que l'hôte lance la partie…</div>`}
+  </div>
+  <div class="foot"><button class="btn-ghost" id="leave">Quitter</button></div>`;
+  if(host){
+    const setCats=arr=>setState({settings:Object.assign({},game.settings,{cats:arr})});
+    app().querySelectorAll('button[data-up]').forEach(b=>b.onclick=()=>{ const i=+b.getAttribute('data-up'); const a=game.settings.cats.slice(); [a[i-1],a[i]]=[a[i],a[i-1]]; setCats(a); });
+    app().querySelectorAll('button[data-down]').forEach(b=>b.onclick=()=>{ const i=+b.getAttribute('data-down'); const a=game.settings.cats.slice(); [a[i+1],a[i]]=[a[i],a[i+1]]; setCats(a); });
+    app().querySelectorAll('button[data-del]').forEach(b=>b.onclick=()=>{ const i=+b.getAttribute('data-del'); const a=game.settings.cats.slice(); a.splice(i,1); setCats(a); });
+    app().querySelectorAll('button[data-add]').forEach(b=>b.onclick=()=>{ const c=b.getAttribute('data-add'); const a=game.settings.cats.slice(); if(!a.includes(c)) a.push(c); setCats(a); });
+    const ci=$("#custcat"), addBtn=$("#addcust");
+    const addCust=()=>{ const v=(ci.value||"").trim(); if(!v) return; const a=game.settings.cats.slice(); if(!a.some(c=>c.toLowerCase()===v.toLowerCase())) a.push(v); setCats(a); };
+    if(addBtn) addBtn.onclick=addCust;
+    if(ci) ci.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); addCust(); } };
+    app().querySelectorAll('button[data-dur]').forEach(b=>b.onclick=()=>setState({settings:Object.assign({},game.settings,{duration:+b.getAttribute("data-dur")})}));
+    app().querySelectorAll('button[data-stop]').forEach(b=>b.onclick=()=>setState({settings:Object.assign({},game.settings,{stopAfter:+b.getAttribute("data-stop")})}));
+    app().querySelectorAll('button[data-target]').forEach(b=>b.onclick=()=>setState({settings:Object.assign({},game.settings,{target:+b.getAttribute("data-target")})}));
+    const tg=$("#tgt"); if(tg) tg.onchange=()=>{ const v=parseInt(tg.value,10); if(v>0) setState({settings:Object.assign({},game.settings,{target:v})}); };
+    const ex=$("#exh"); if(ex) ex.onchange=()=>setState({settings:Object.assign({},game.settings,{excludeHard:ex.checked})});
+    const sb=$("#start"); if(sb) sb.onclick=startRound;
+  }
+  $("#leave").onclick=leaveGame;
+}
+
+/* ---------- lancer une manche ---------- */
+function lettersLeft(){
+  const st=game.settings, pool=ALPHA.filter(l=> st.excludeHard?!HARD.includes(l):true), used=game.usedLetters||[];
+  return pool.filter(l=>!used.includes(l));
+}
+function startRound(){
+  const avail=lettersLeft();
+  if(!avail.length){ alert("Toutes les lettres ont déjà été jouées dans cette partie — aucune ne peut sortir deux fois. Lance une nouvelle partie pour repartir de zéro."); return; }
+  const letter=avail[Math.floor(Math.random()*avail.length)];
+  const used=(game.usedLetters||[]).concat(letter);
+  setState({phase:"playing",letter,round:(game.round||0)+1,startTime:Date.now(),usedLetters:used,stoppedBy:""});
+}
+
+/* ---------- JOUER ---------- */
+function renderPlaying(){
+  const st=game.settings;
+  if(builtRound!==game.round){
+    builtRound=game.round;
+    app().innerHTML=`
+    <div class="card center">
+      <div class="roundtag">Manche ${game.round} — lettre</div>
+      <div class="letter">${esc(game.letter)}</div>
+      <div class="timerbar" id="tbar"><i style="width:100%"></i></div>
+      <div class="tnum" id="tnum"></div>
+    </div>
+    <div class="card"><div class="grid-ans" id="grid"></div></div>
+    <div class="card"><button class="btn-stop" id="stop">STOP — j'ai fini</button>
+      <div class="hint">${(st.stopAfter||1)===1?'Le premier « Stop » arrête la manche pour tout le monde.':'La manche s\'arrête quand '+stopLabel(st.stopAfter)+' ont cliqué « Stop ».'}</div></div>`;
+    $("#grid").innerHTML=st.cats.map(cat=>`
+      <div class="ans-row"><div class="lab">${esc(cat)}</div>
+        <input type="text" data-cat="${esc(cat)}" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="${esc(game.letter)}…"></div>`).join("");
+    $("#grid").querySelectorAll("input").forEach(inp=>{
+      const cat=inp.getAttribute("data-cat"); inp.value=myAnswers[cat]||"";
+      inp.addEventListener("input",()=>{ myAnswers[cat]=inp.value; });
+    });
+    $("#stop").onclick=()=>{
+      myPres.ans={round:game.round,values:Object.assign({},myAnswers)};
+      myPres.stop=game.round; pushPresence();
+      $("#grid").querySelectorAll("input").forEach(i=>i.disabled=true);
+      const btn=$("#stop"); if(btn&&btn.parentElement) btn.parentElement.innerHTML='<div class="notice">Tu as fini — en attente des autres joueurs…</div>';
+    };
+    manageTick();
+  }
+}
+
+/* ---------- scoring ---------- */
+function roundAns(round){ return peers.filter(p=>p.ans && p.ans.round===round).map(p=>({cid:p.cid,name:p.name,values:p.ans.values||{}})); }
+function markOf(cid,cat){ const p=peers.find(x=>x.cid===cid); if(p&&p.marks&&p.marks.round===game.round&&p.marks.map&&(cat in p.marks.map)) return p.marks.map[cat]; return undefined; }
+function computeRoundScores(round){
+  const st=game.settings, letter=game.letter, list=roundAns(round);
+  const cells={}, scores={};
+  list.forEach(a=>{ scores[a.cid]=0; cells[a.cid]={};
+    st.cats.forEach(cat=>{
+      const w=(a.values[cat])||"";
+      const firstOk=w.trim()!=="" && firstAlpha(w)===firstAlpha(letter);
+      let pts=0;
+      if(firstOk){ const mk=markOf(a.cid,cat); pts=(mk===undefined)?2:(mk|0); if(pts<0)pts=0; if(pts>2)pts=2; }
+      cells[a.cid][cat]={word:w,pts,valid:pts>0,firstOk};
+      scores[a.cid]+=pts;
+    });
+  });
+  return {cells,scores,list};
+}
+function finalizeRound(){
+  if(myRole!=="host"||!game||game.phase!=="review") return;
+  const fin=computeRoundScores(game.round).scores;
+  const res=Object.assign({},game.results||{}); res[game.round]=fin;
+  const t={}; playersList.forEach(p=>t[p.cid]=0);
+  Object.keys(res).forEach(r=>{const m=res[r]||{};Object.keys(m).forEach(cid=>t[cid]=(t[cid]||0)+(m[cid]||0));});
+  const target=game.settings.target||0; let winner="";
+  if(target){ let best=-1,bc=""; playersList.forEach(p=>{ if((t[p.cid]||0)>best){best=t[p.cid]||0;bc=p.cid;} }); if(best>=target) winner=bc; }
+  setState({results:res,phase:"results",winner});
+}
+
+/* ---------- REVIEW ---------- */
+function renderReview(){
+  const host=isHost(), st=game.settings;
+  const {cells,scores,list}=computeRoundScores(game.round);
+  const cids=list.map(a=>a.cid);
+  const nameOf=cid=>{ const p=playersList.find(x=>x.cid===cid)||list.find(a=>a.cid===cid); return p?p.name:"Joueur"; };
+  const head=`<tr><th>Catégorie</th>`+cids.map(cid=>`<th>${esc(nameOf(cid))}${cid===myId?' (toi)':''}<br><span class="muted">${scores[cid]||0} pts</span></th>`).join("")+`</tr>`;
+  const chipOf=p=>p===2?'+2':p===1?'+1':'0';
+  const body=st.cats.map(cat=>`<tr><td class="muted">${esc(cat)}</td>`+cids.map(cid=>{
+    const c=(cells[cid]&&cells[cid][cat])||{word:"",valid:false,pts:0,firstOk:false};
+    const empty=c.word.trim()==="";
+    const pcls=c.pts===2?"p2":c.pts===1?"p1":"p0";
+    if(cid===myId && !empty && c.firstOk){
+      return `<td class="ans-cell editable" data-cat="${esc(cat)}">
+        <span class="w ${c.pts>0?'':'strike'}">${esc(c.word)}</span>
+        <span class="p ${pcls}">${chipOf(c.pts)}</span></td>`;
+    }
+    return `<td class="ans-cell">
+      <span class="w ${c.pts>0?'':'strike'}">${empty?'<span class="muted">—</span>':esc(c.word)}</span>
+      <span class="p ${pcls}">${empty?'':chipOf(c.pts)}</span></td>`;
+  }).join("")+`</tr>`).join("");
+  const voters=playersList.length, ready=peers.filter(p=>p.name&&p.rv===game.round).length, iReady=myPres.rv===game.round;
+  app().innerHTML=`
+  <div class="card center"><div class="roundtag">Manche ${game.round} — lettre <b style="color:var(--accent)">${esc(game.letter)}</b></div>
+    <div class="muted" style="margin-top:4px">${game.stoppedBy==='⏱'?'Temps écoulé':('Stop par '+esc(game.stoppedBy||'—'))}</div></div>
+  <div class="card"><h2>Correction <span class="badge">chacun note ses réponses</span></h2>
+    <div style="overflow-x:auto"><table class="review">${head}${body}</table></div>
+    <div class="hint">Tu notes <b>ta propre colonne</b> : clique une case pour changer les points, en cycle <b>2 → 1 → 0</b> (2 = réponse unique · 1 = trouvée par un autre joueur · 0 = refusée). Les désaccords se règlent à l'oral.</div>
+    <div class="spacer"></div>
+    ${iReady?`<div class="notice">Tu as fini de noter — en attente des autres (${ready}/${voters})…</div>`
+      :`<button class="btn-ok" id="ready">J'ai fini de noter (${ready}/${voters})</button>`}
+    ${host?`<div class="spacer"></div><button class="btn-sec" id="force">Clôturer la manche maintenant</button>`:''}
+  </div>
+  <div class="card"><h2>Classement</h2>${playerPills(true)}</div>`;
+  app().querySelectorAll(".ans-cell.editable").forEach(td=>td.onclick=()=>{
+    const cat=td.getAttribute("data-cat");
+    if(!myPres.marks||myPres.marks.round!==game.round) myPres.marks={round:game.round,map:{}};
+    const cur=(myPres.marks.map[cat]===undefined)?2:myPres.marks.map[cat];
+    myPres.marks.map[cat]= cur===2?1:cur===1?0:2;
+    pushPresence(); renderReview();
+  });
+  const rb=$("#ready"); if(rb) rb.onclick=()=>{ myPres.rv=game.round; pushPresence(); renderReview(); };
+  const fb=$("#force"); if(fb) fb.onclick=()=>finalizeRound();
+}
+
+/* ---------- RESULTS ---------- */
+function renderResults(){
+  const host=isHost(), t=totals(), target=game.settings.target||0;
+  const ranked=playersList.slice().sort((a,b)=>(t[b.cid]||0)-(t[a.cid]||0)), lead=ranked[0];
+  const won=game.winner, winnerName=won?((playersList.find(p=>p.cid===won)||{}).name||""):"";
+  app().innerHTML=`
+  <div class="card center">
+    ${won?`<div class="roundtag">🏆 Partie terminée</div>
+       <div class="letter" style="font-size:38px">${esc(winnerName)}</div>
+       <div class="muted">remporte la partie avec ${t[won]||0} pts</div>`
+     :`<div class="roundtag">Après ${game.round} manche${game.round>1?'s':''}${target?' · objectif '+target+' pts':''}</div>
+       ${lead?`<div class="letter" style="font-size:38px">${esc(lead.name)}</div><div class="muted">en tête — ${t[lead.cid]||0} pts</div>`:''}`}
+  </div>
+  <div class="card"><h2>Classement général</h2>
+    <div class="plist">${ranked.map((p,i)=>`<div class="pill"><span class="badge">${i+1}</span>
+      <span class="nm">${esc(p.name)}${p.cid===myId?' <span class="muted">(toi)</span>':''}</span>
+      <span class="sc">${t[p.cid]||0}</span></div>`).join("")}</div></div>
+  <div class="card">
+    ${host?(won?`<button class="btn-primary" id="newgame">Nouvelle partie</button>`
+      :`<button class="btn-primary" id="next" ${lettersLeft().length?'':'disabled'}>Nouvelle manche</button>
+        ${lettersLeft().length?'':'<div class="hint">Toutes les lettres ont été jouées. Lance une nouvelle partie pour recommencer.</div>'}
+        <div class="spacer"></div>
+        <button class="btn-sec" id="back">Revenir aux réglages</button>`)
+      :`<div class="notice">${won?'Partie terminée.':'En attente de l\'hôte pour la suite…'}</div>`}</div>
+  <div class="foot"><button class="btn-ghost" id="leave">Quitter la partie</button></div>`;
+  if(host){
+    if(won){ $("#newgame").onclick=()=>setState({results:{},round:0,phase:"lobby",winner:"",usedLetters:[],stoppedBy:""}); }
+    else { $("#next").onclick=startRound; $("#back").onclick=()=>setState({phase:"lobby"}); }
+  }
+  $("#leave").onclick=leaveGame;
+}
+
+/* ---------- quitter ---------- */
+function leaveGame(){
+  try{ remove(gref("players/"+myId)); }catch(e){}
+  try{ offState&&offState(); offPlayers&&offPlayers(); }catch(e){}
+  if(tickTimer){clearInterval(tickTimer);tickTimer=null;}
+  if(hostTimer){clearInterval(hostTimer);hostTimer=null;}
+  gameCode=null; game=null; myRole=null; peers=[]; playersList=[];
+  myAnswers={}; myPres={}; builtRound=-1; lastPhase=null; myAnsRound=-1;
+  screenHome();
+}
+</script>
+</body>
+</html>
